@@ -21,7 +21,7 @@ export default function Privacy() {
       </Link>
 
       <h1>Privacy Policy</h1>
-      <p className="privacy-updated">Last updated: April 2025</p>
+      <p className="privacy-updated">Last updated: April 2026</p>
 
       <h2>What we collect</h2>
       <p>

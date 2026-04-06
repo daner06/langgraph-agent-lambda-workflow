@@ -32,3 +32,5 @@ AWS_PROFILE=langgraph-deployer ./frontend/deploy.sh
 ```
 
 `deploy.sh` runs `yarn build`, syncs `dist/` to S3, and invalidates the CloudFront cache.
+
+[Privacy Policy](https://d3kl9ppl7q0k8s.cloudfront.net/privacy)

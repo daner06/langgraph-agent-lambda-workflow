@@ -6,6 +6,7 @@
 [![AWS](https://img.shields.io/badge/AWS-Lambda%20%7C%20Bedrock%20%7C%20CloudFront-orange?style=for-the-badge&logo=amazonaws)](https://aws.amazon.com)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Agentic%20Workflow-green?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
 [![Terraform](https://img.shields.io/badge/Terraform-Infrastructure%20as%20Code-purple?style=for-the-badge&logo=terraform)](https://terraform.io)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 ---
 
@@ -17,8 +18,6 @@ Ask any research question, and the agent will:
 1. Search the web via Tavily API
 2. Analyse results with Claude Sonnet 4.6 on AWS Bedrock
 3. Generate a well-structured, cited answer
-
----
 
 ## 🏗️ Architecture
 
