@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Build, push to ECR, and update Lambda. Requires: Docker, AWS CLI, deployer IAM permissions.
+# Run from anywhere: ./backend/deploy.sh (or cd backend && ./deploy.sh)
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 REGION="${REGION:-eu-west-2}"
 PREFIX="${PREFIX:-cd}"

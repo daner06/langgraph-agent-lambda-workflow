@@ -3,6 +3,7 @@ LangGraph Research Agent
 """
 
 import os
+from pathlib import Path
 from typing import TypedDict, List, Dict, Any, Literal
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
@@ -10,7 +11,9 @@ from langchain_aws import ChatBedrockConverse
 from langchain_tavily import TavilySearch
 from langgraph_checkpoint_dynamodb.saver import DynamoDBSaver
 
-load_dotenv()
+_backend_dir = Path(__file__).resolve().parent
+load_dotenv(_backend_dir / ".env")
+load_dotenv(_backend_dir.parent / ".env")  # optional repo-root .env
 
 # ChatBedrockConverse may return AIMessage.content as plain text or a list of content blocks.
 def _aimessage_text(msg: Any) -> str:
