@@ -209,3 +209,8 @@ __marimo__/
 .DS_Store
 *.pyc
 __pycache__/
+terraform.tfvars
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate.backup
+terraform/terraform.tfstate

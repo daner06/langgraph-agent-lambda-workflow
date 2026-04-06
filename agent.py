@@ -2,15 +2,13 @@
 LangGraph Research Agent
 """
 
-import sys
-import warnings
-
 import os
 from typing import TypedDict, List, Dict, Any, Literal
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
 from langchain_aws import ChatBedrockConverse
 from langchain_tavily import TavilySearch
+from langgraph_checkpoint_dynamodb.saver import DynamoDBSaver
 
 load_dotenv()
 
@@ -80,7 +78,7 @@ def analyse_node(state: ResearchState) -> Dict[str, Any]:
 
     llm = get_bedrock_llm()
 
-    # Fromat search results for better readability by the LLM
+    # Format search results for better readability by the LLM
     formatted_results = ""
     for i, result in enumerate(state["search_results"], 1):
         formatted_results += f"\n--- Result {i} ---\n"
@@ -171,8 +169,14 @@ def create_agent():
     )
     builder.add_edge("finalise", END)
 
-    # Compile the graph into a runnable agent
-    return builder.compile()
+    # Create DynamoDB checkpointer for state persistence
+    checkpointer = DynamoDBSaver(
+        checkpoints_table_name=os.environ.get("CHECKPOINTS_TABLE", "langgraph-checkpoints"),
+        writes_table_name=os.environ.get("WRITES_TABLE", "langgraph-writes"),
+    )
+
+    # Compile the graph with the checkpointer
+    return builder.compile(checkpointer=checkpointer)
 
 if __name__ == "__main__":
     print("Starting LangGraph Research Agent...")
@@ -185,6 +189,13 @@ if __name__ == "__main__":
     print(f"Research query: {test_query}")
     print("-" * 60)
 
+    # Add a thread_id to persist state across multiple runs
+    config = {
+        "configurable": {
+            "thread_id": "test-session-001",
+        }
+    }
+
     result = agent.invoke({
         "query": test_query,
         "iterations": 0,
@@ -192,15 +203,11 @@ if __name__ == "__main__":
         "search_results": [],
         "summary": "",
         "answer": "",
-    })
+    }, config=config)
 
-    print("\nFinal Answer:")
-    print("=" * 60)
-    print(result["answer"])
-    print("=" * 60)
-    
+     
     print("\n" + "=" * 60)
-    print("📋 FINAL ANSWER:")
+    print("FINAL ANSWER:")
     print("=" * 60)
     print(result["answer"])
     print("\n" + "=" * 60)
