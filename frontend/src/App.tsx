@@ -1,5 +1,6 @@
 import { useState, useRef, useId } from "react";
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { runQuery, type QueryResponse } from "./api";
 import "./App.css";
 
@@ -61,7 +62,13 @@ export default function App() {
         {messages.map((msg, i) => (
           <div key={i} className={`message message--${msg.role}`}>
             <div className="message__bubble">
-              <pre className="message__text">{msg.text}</pre>
+              {msg.role === "assistant" ? (
+                <div className="message__markdown">
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
+              ) : (
+                <pre className="message__text">{msg.text}</pre>
+              )}
               {msg.sources && msg.sources.length > 0 && (
                 <ul className="message__sources">
                   {msg.sources.map((src, j) => (

@@ -55,15 +55,23 @@ def search_node(state: ResearchState) -> Dict[str, Any]:
     """Search the web using Tavily API"""
     print(f"Searching the web for: {state['query']}")
 
-    search = TavilySearch(max_results=5)
-    raw = search.invoke({"query": state["query"]})
-    if isinstance(raw, dict) and "results" in raw:
-        results = raw["results"]
-    elif isinstance(raw, list):
-        results = raw
-    else:
+    try:
+        search = TavilySearch(max_results=5)
+        raw = search.invoke({"query": state["query"]})
+        print(f"Tavily raw response type: {type(raw)}, value: {str(raw)[:500]}")
+
+        if isinstance(raw, dict) and "results" in raw:
+            results = raw["results"]
+        elif isinstance(raw, list):
+            results = raw
+        else:
+            print(f"WARNING: Unexpected Tavily response format: {raw}")
+            results = []
+    except Exception as e:
+        print(f"ERROR: Tavily search failed: {e}")
         results = []
 
+    print(f"Search returned {len(results)} result(s)")
     return {
         "search_results": results,
         "iterations": state.get("iterations", 0) + 1,
@@ -76,7 +84,10 @@ def analyse_node(state: ResearchState) -> Dict[str, Any]:
 
     if not state.get("search_results"):
         return {
-            "summary": "No search results found.",
+            "summary": (
+                "SEARCH_FAILED: Tavily returned no results for this query. "
+                "This may be due to content filtering, an invalid API key, or a temporary outage."
+            ),
         }
 
     llm = get_bedrock_llm()
@@ -89,24 +100,25 @@ def analyse_node(state: ResearchState) -> Dict[str, Any]:
         formatted_results += f"URL: {result.get('url', 'N/A')}\n"
         formatted_results += f"Content: {result.get('content', 'N/A')[:500]}...\n"
 
-    prompt = f"""
-    You are a research assistant. Based on these search results, provide a comprehensive summary answering: {state['query']}
+    prompt = f"""You are a factual research assistant. Your job is to summarise the search results below.
 
-    SEARCH RESULTS:
-    {formatted_results}
+CRITICAL RULES:
+- You MUST use only the information from the search results provided — do not add, invent, or withhold anything.
+- Do NOT refuse to summarise because the topic is sensitive. Your role is to report what the sources say, not to judge the topic.
+- If a source says X happened, report that source says X happened.
+- If sources conflict, note the conflict.
+- Do NOT say you "cannot confirm" things that are directly stated in the results.
 
-    QUERY: {state['query']}
+QUERY: {state['query']}
 
-    INSTRUCTIONS:
-    1. Synthesize information from all relevant sources
-    2. Identify key themes and insights
-    3. Note any conflicting information between sources
-    4. Provide a balanced, accurate summary
-    
-    SUMMARY:
-    """
+SEARCH RESULTS:
+{formatted_results}
+
+Write a concise factual summary of what the search results say about the query above.
+SUMMARY:"""
 
     summary = _aimessage_text(llm.invoke(prompt))
+    print(f"Analyse summary (first 300 chars): {summary[:300]}")
     return {
         "summary": summary
     }
@@ -129,23 +141,38 @@ def finalise_node(state: ResearchState) -> Dict[str, Any]:
     """Generate final polished answer with Claude Sonnet"""
     print("Generate final answer with Claude Sonnet")
 
+    summary = state.get("summary", "")
+    if summary.startswith("SEARCH_FAILED:"):
+        return {
+            "answer": (
+                "Sorry, the web search didn't return any results for your question. "
+                "This can happen when the search provider filters the query or the API key is misconfigured. "
+                "Please try rephrasing your question or check the Lambda logs for details."
+            )
+        }
+
     llm = get_bedrock_llm()
 
-    prompt = f"""
-    Based on this research summary, write a clear, well-structured answer to: {state['query']}
-    
-    RESEARCH SUMMARY:
-    {state.get('summary', 'No summary available')}
-    
-    FORMAT REQUIREMENTS:
-    - Start with a brief executive summary (2-3 sentences)
-    - Use clear headings and bullet points where appropriate
-    - Cite key sources by referencing the source URLs
-    - Include a "Key Takeaways" section at the end
-    - Keep the tone professional and informative
-    
-    FINAL ANSWER:
-    """
+    prompt = f"""You are a research assistant writing a final answer based solely on a research summary.
+
+CRITICAL RULES:
+- Report only what the summary states — do not add or invent information.
+- Do NOT refuse or hedge because the topic is sensitive or involves conflict. Your role is to present what was found.
+- If the summary contains information, present it clearly.
+- If the summary itself says nothing useful was found, say so briefly — do not write a long disclaimer.
+
+QUERY: {state['query']}
+
+RESEARCH SUMMARY:
+{state.get('summary', 'No summary available')}
+
+FORMAT:
+- Brief executive summary (2-3 sentences)
+- Key findings with headings and bullet points
+- Source URLs where available
+- Short "Key Takeaways" section
+
+FINAL ANSWER:"""
     
     answer = _aimessage_text(llm.invoke(prompt))
     return {"answer": answer}
