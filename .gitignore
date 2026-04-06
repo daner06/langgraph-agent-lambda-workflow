@@ -219,3 +219,7 @@ frontend/dist/
 frontend/build/
 frontend/.env
 frontend/.env.local
+frontend/terraform/.terraform/
+frontend/terraform/.terraform.lock.hcl
+frontend/terraform/terraform.tfstate
+frontend/terraform/terraform.tfstate.backup

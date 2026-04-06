@@ -49,7 +49,7 @@ Two separate AWS identities are needed:
 | Identity | Purpose | Credentials |
 |---|---|---|
 | **Admin** | Runs `terraform apply` once to create all infrastructure | IAM user/role with broad permissions |
-| **Deployer** (`cd-langgraph-bedrock-agent`) | Runs `deploy.sh` on every release | Narrowly scoped: ECR push + Lambda update only |
+| **Deployer** (`cd-langgraph-bedrock-agent`) | Runs `deploy.sh` on every release | Narrowly scoped: ECR push, Lambda update, S3 sync, CloudFront invalidation |
 
 ### Step 1 — Create the deployer IAM user manually (once)
 
@@ -79,6 +79,9 @@ cd backend/terraform
 terraform init
 terraform plan
 terraform apply -auto-approve
+
+# The API URL is printed at the end — copy it for your React app
+terraform output api_url
 ```
 
 ### Step 3 — Build and push the container image (deployer credentials)

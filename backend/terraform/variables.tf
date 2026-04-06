@@ -27,3 +27,16 @@ variable "tavily_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "api_key" {
+  description = "Secret key the React frontend must send in the X-Api-Key header. Leave empty to disable auth (not recommended)."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "allowed_origins" {
+  description = "CORS allowed origins for the Lambda Function URL (e.g. your React app domain). Use [\"*\"] during local development."
+  type        = list(string)
+  default     = ["*"]
+}

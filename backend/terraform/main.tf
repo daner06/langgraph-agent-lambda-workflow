@@ -29,3 +29,8 @@ output "checkpoints_table_name" {
 output "writes_table_name" {
   value = aws_dynamodb_table.writes_table.name
 }
+
+output "api_url" {
+  description = "Public HTTPS endpoint — POST to {api_url}/query from your React app."
+  value       = "${trimsuffix(aws_apigatewayv2_stage.default.invoke_url, "/")}/query"
+}

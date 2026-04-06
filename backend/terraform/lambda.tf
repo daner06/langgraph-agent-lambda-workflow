@@ -14,6 +14,7 @@ resource "aws_lambda_function" "langgraph_agent" {
       TAVILY_API_KEY     = var.tavily_api_key
       CHECKPOINTS_TABLE  = aws_dynamodb_table.checkpoints_table.name
       WRITES_TABLE       = aws_dynamodb_table.writes_table.name
+      API_KEY            = var.api_key
     }
   }
 
