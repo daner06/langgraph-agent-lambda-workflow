@@ -160,6 +160,25 @@ If the FAISS index is missing the retrieve step is recorded as "skipped" and the
 
 ## Deployment to AWS
 
+### RAG-specific steps (hybrid retrieval + private corpus)
+
+Before running `./backend/deploy.sh`:
+
+1. Build the FAISS index locally (requires Bedrock embeddings access in eu-west-2):
+   ```bash
+   python scripts/build_faiss_index.py
+   ```
+
+2. Then run the normal deploy scripts:
+   ```bash
+   ./backend/deploy.sh
+   ./frontend/deploy.sh
+   ```
+
+This bakes both the FAISS index and the documents under `backend/docs/` into the container image.
+
+---
+
 Two separate AWS identities are needed:
 
 | Identity | Purpose | Credentials |

@@ -61,3 +61,25 @@ Ask any research question, and the agent will:
 | **CloudFront** | CDN + HTTPS |
 | **S3** | Static hosting |
 
+## Deployment
+
+Before deploying the hybrid RAG version:
+
+1. Build the index locally (needs Bedrock access):
+   ```bash
+   cd backend
+   python scripts/build_faiss_index.py
+   ```
+
+2. Deploy backend:
+   ```bash
+   ./backend/deploy.sh
+   ```
+
+3. Deploy frontend:
+   ```bash
+   ./frontend/deploy.sh
+   ```
+
+This bakes the private documents + FAISS index into the Lambda image. After the frontend deploy, the "📚 View internal documents" button and agent steps will be visible on your CloudFront URL.
+

@@ -9,7 +9,7 @@ _agent = None
 CORS_HEADERS = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-Api-Key",
 }
 
@@ -28,16 +28,21 @@ def _response(status: int, body: dict) -> dict:
 def lambda_handler(event, context):
     """Entry point for AWS Lambda (API Gateway HTTP API v2 and direct CLI invoke)."""
 
-    expected_key = os.environ.get("API_KEY", "")
-    if expected_key:
-        provided_key = (event.get("headers") or {}).get("x-api-key", "")
-        if provided_key != expected_key:
-            return _response(401, {"error": "Unauthorized"})
-
-    # Corpus document serving (for the "View internal documents" feature)
     raw_path = (event.get("rawPath") or event.get("path") or "")
     if isinstance(raw_path, str):
         raw_path = raw_path.rstrip("/")
+
+    # API key protection only for the main agent query path.
+    # The corpus list and document viewer (/corpus and /corpus/*) are intentionally
+    # left open so visitors/recruiters can browse the private documents via the UI
+    # without needing the secret key.
+    is_corpus_path = raw_path == "/corpus" or raw_path.startswith("/corpus/")
+    if not is_corpus_path:
+        expected_key = os.environ.get("API_KEY", "")
+        if expected_key:
+            provided_key = (event.get("headers") or {}).get("x-api-key", "")
+            if provided_key != expected_key:
+                return _response(401, {"error": "Unauthorized"})
 
     if raw_path == "/corpus":
         docs_dir = Path(os.environ.get("LAMBDA_TASK_ROOT", ".")) / "docs"
