@@ -48,6 +48,32 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.langgraph_agent.id
   name        = "$default"
   auto_deploy = true
+
+  # Throttling for cost/abuse protection (tight on the expensive agent route).
+  default_route_settings {
+    throttling_burst_limit = 20
+    throttling_rate_limit  = 10
+  }
+
+  # Tight per-route limits on POST /query (Bedrock + 3GB Lambda).
+  route_settings {
+    route_key              = "POST /query"
+    throttling_burst_limit = 5
+    throttling_rate_limit  = 3
+  }
+
+  # Looser limits for cheap corpus browser routes.
+  route_settings {
+    route_key              = "GET /corpus"
+    throttling_burst_limit = 30
+    throttling_rate_limit  = 15
+  }
+
+  route_settings {
+    route_key              = "GET /corpus/{proxy+}"
+    throttling_burst_limit = 30
+    throttling_rate_limit  = 15
+  }
 }
 
 # Allow API Gateway to invoke the Lambda
