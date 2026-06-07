@@ -223,3 +223,7 @@ frontend/terraform/.terraform/
 frontend/terraform/.terraform.lock.hcl
 frontend/terraform/terraform.tfstate
 frontend/terraform/terraform.tfstate.backup
+
+# Local RAG artifacts (FAISS index built from docs/)
+backend/faiss_index/
+!backend/faiss_index/.gitkeep

@@ -1,6 +1,6 @@
 # 🧠 AI Research Assistant
 
-> A production-ready, multi-agent research assistant built with LangGraph, AWS Bedrock (Claude Sonnet 4.6), and React. Deployed serverlessly on AWS Lambda with Terraform infrastructure as code.
+> A production-ready, multi-agent research assistant built with LangGraph, AWS Bedrock (Claude Sonnet 4.6), hybrid RAG (FAISS + embeddings), and React. Deployed serverlessly on AWS Lambda with Terraform infrastructure as code. The UI shows the exact agent steps and decisions for every query.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-CloudFront-blue?style=for-the-badge&logo=amazoncloudfront)](https://d3kl9ppl7q0k8s.cloudfront.net/)
 [![AWS](https://img.shields.io/badge/AWS-Lambda%20%7C%20Bedrock%20%7C%20CloudFront-orange?style=for-the-badge&logo=amazonaws)](https://aws.amazon.com)
@@ -15,9 +15,10 @@
 **Try it yourself:** [https://d3kl9ppl7q0k8s.cloudfront.net/](https://d3kl9ppl7q0k8s.cloudfront.net/)
 
 Ask any research question, and the agent will:
-1. Search the web via Tavily API
-2. Analyse results with Claude Sonnet 4.6 on AWS Bedrock
-3. Generate a well-structured, cited answer
+1. Retrieve from a small curated research corpus via RAG (Bedrock embeddings + FAISS)
+2. Search the live web via Tavily
+3. Analyse the combined context with Claude Sonnet 4.6 on AWS Bedrock
+4. Return a structured answer **and show you the exact steps/decisions** the LangGraph agent took
 
 ## 🏗️ Architecture
 
@@ -26,7 +27,7 @@ Ask any research question, and the agent will:
 | **Frontend** | User Browser → CloudFront CDN → S3 | React + TypeScript |
 | **API** | API Gateway (POST /query) | HTTP API (v2) |
 | **Compute** | Lambda Container (3GB, 15min timeout) | Python + LangGraph |
-| **Agent Workflow** | Search → Analyse → Finalise (conditional loop) | LangGraph |
+| **Agent Workflow** | retrieve (RAG) → search (web) → analyse → finalise (steps shown in UI) | LangGraph |
 | **External APIs** | Tavily (search) + Bedrock (Claude 4.6) | REST + SDK |
 | **Persistence** | DynamoDB (checkpoints + writes tables) | NoSQL |
 
@@ -38,6 +39,7 @@ Ask any research question, and the agent will:
 | **LangGraph** | Multi-agent workflow orchestration |
 | **AWS Bedrock (Claude Sonnet 4.6)** | LLM for analysis and answer generation |
 | **Tavily API** | Web search for research results |
+| **RAG + FAISS** | Local vector retrieval over curated research corpus (Bedrock embeddings) |
 | **AWS Lambda** | Serverless compute (15-min timeout, 3GB memory) |
 | **DynamoDB** | State persistence (checkpoints + writes tables) |
 | **API Gateway** | REST endpoint for frontend communication |

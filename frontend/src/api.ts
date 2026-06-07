@@ -6,9 +6,19 @@ export interface QueryRequest {
   thread_id?: string;
 }
 
+export interface Step {
+  node: string;
+  detail?: string;
+  ts?: number;
+  skipped?: boolean;
+  error?: boolean;
+}
+
 export interface QueryResponse {
   answer: string;
   thread_id: string;
+  iterations?: number;
+  steps?: Step[];
   sources?: string[];
 }
 
