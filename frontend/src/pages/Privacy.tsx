@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "../App.css";
 
 function useDNT(): boolean {
   return (
@@ -15,20 +14,23 @@ export default function Privacy() {
   const dntEnabled = useDNT();
 
   return (
-    <div className="privacy-page">
-      <Link to="/" className="privacy-back">
+    <div className="max-w-[680px] mx-auto px-6 py-10 leading-[1.7] text-[0.875rem] text-text-muted">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-sm text-text-muted no-underline mb-8 hover:text-text"
+      >
         ← Back to Research Agent
       </Link>
 
-      <h1>Privacy Policy</h1>
-      <p className="privacy-updated">Last updated: April 2026</p>
+      <h1 className="text-[1.4rem] font-semibold text-text mb-1.5">Privacy Policy</h1>
+      <p className="text-sm text-text-muted mb-8">Last updated: April 2026</p>
 
-      <h2>What we collect</h2>
+      <h2 className="text-base font-semibold text-text mt-7 mb-2">What we collect</h2>
       <p>
         This site uses <strong>Amazon CloudFront standard access logs</strong>.
         Each request to the site generates a log entry that may include:
       </p>
-      <ul>
+      <ul className="pl-5 my-2">
         <li>IP address of the requester</li>
         <li>Date and time of the request</li>
         <li>URL path requested</li>
@@ -41,8 +43,8 @@ export default function Privacy() {
         pixels.
       </p>
 
-      <h2>How we use these logs</h2>
-      <ul>
+      <h2 className="text-base font-semibold text-text mt-7 mb-2">How we use these logs</h2>
+      <ul className="pl-5 my-2">
         <li>Aggregated traffic statistics (page popularity, geographic region)</li>
         <li>Detecting and blocking malicious or abusive requests</li>
         <li>Diagnosing technical issues</li>
@@ -53,14 +55,14 @@ export default function Privacy() {
         No personal data is sold, rented, or shared with third parties.
       </p>
 
-      <h2>IP address anonymisation</h2>
+      <h2 className="text-base font-semibold text-text mt-7 mb-2">IP address anonymisation</h2>
       <p>
         Raw IP addresses are retained for up to <strong>7 days</strong> for
         security purposes (abuse detection). After that period they are only
         accessible in aggregated, anonymised form.
       </p>
 
-      <h2>Do Not Track</h2>
+      <h2 className="text-base font-semibold text-text mt-7 mb-2">Do Not Track</h2>
       <p>
         We respect the <strong>Do Not Track (DNT)</strong> browser signal.
         When DNT is enabled, we still receive access logs (this is a
@@ -69,8 +71,10 @@ export default function Privacy() {
       </p>
 
       <div
-        className={`dnt-banner ${
-          dntEnabled ? "dnt-banner--active" : "dnt-banner--inactive"
+        className={`mt-3 p-3 rounded-[12px] text-sm ${
+          dntEnabled
+            ? "bg-[rgba(108,138,255,0.1)] border border-[rgba(108,138,255,0.3)] text-accent"
+            : "bg-[rgba(255,255,255,0.04)] border border-border text-text-muted"
         }`}
       >
         {dntEnabled ? (
@@ -87,10 +91,10 @@ export default function Privacy() {
         )}
       </div>
 
-      <h2>Contact</h2>
+      <h2 className="text-base font-semibold text-text mt-7 mb-2">Contact</h2>
       <p>
         Questions about this policy? Open an issue on the project repository or
-        contact me via my <a href="mailto:daniel@cryptodecision.io">email</a>.
+        contact me via my <a href="mailto:daniel@cryptodecision.io" className="text-accent no-underline hover:underline">email</a>.
       </p>
     </div>
   );

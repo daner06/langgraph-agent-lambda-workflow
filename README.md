@@ -22,44 +22,45 @@ Ask any research question, and the agent will:
 
 ## 🏗️ Architecture
 
-| Layer | Component | Technology |
-|-------|-----------|------------|
-| **Frontend** | User Browser → CloudFront CDN → S3 | React + TypeScript |
-| **API** | API Gateway (POST /query) | HTTP API (v2) |
-| **Compute** | Lambda Container (3GB, 15min timeout) | Python + LangGraph |
-| **Agent Workflow** | retrieve (RAG) → search (web) → analyse → finalise (steps shown in UI) | LangGraph |
-| **External APIs** | Tavily (search) + Bedrock (Claude 4.6) | REST + SDK |
-| **Persistence** | DynamoDB (checkpoints + writes tables) | NoSQL |
+|| Layer | Component | Technology |
+||-------|-----------|------------|
+|| **Frontend** | User Browser → CloudFront CDN → S3 | React + TypeScript + Tailwind |
+|| **API** | API Gateway (POST /query) | HTTP API (v2) |
+|| **Compute** | Lambda Container (3GB, 15min timeout) | Python + LangGraph |
+|| **Agent Workflow** | retrieve (RAG) → search (web) → analyse → finalise (steps shown in UI) | LangGraph |
+|| **External APIs** | Tavily (search) + Bedrock (Claude 4.6) | REST + SDK |
+|| **Persistence** | DynamoDB (checkpoints + writes tables) | NoSQL |
 
 ## 🛠️ Technology Stack
 
 ### Backend
-| Technology | Purpose |
-|------------|---------|
-| **LangGraph** | Multi-agent workflow orchestration |
-| **AWS Bedrock (Claude Sonnet 4.6)** | LLM for analysis and answer generation |
-| **Tavily API** | Web search for research results |
-| **RAG + FAISS** | Local vector retrieval over curated research corpus (Bedrock embeddings) |
-| **AWS Lambda** | Serverless compute (15-min timeout, 3GB memory) |
-| **DynamoDB** | State persistence (checkpoints + writes tables) |
-| **API Gateway** | REST endpoint for frontend communication |
+|| Technology | Purpose |
+||------------|---------|
+|| **LangGraph** | Multi-agent workflow orchestration |
+|| **AWS Bedrock (Claude Sonnet 4.6)** | LLM for analysis and answer generation |
+|| **Tavily API** | Web search for research results |
+|| **RAG + FAISS** | Local vector retrieval over curated research corpus (Bedrock embeddings) |
+|| **AWS Lambda** | Serverless compute (15-min timeout, 3GB memory) |
+|| **DynamoDB** | State persistence (checkpoints + writes tables) |
+|| **API Gateway** | REST endpoint for frontend communication |
 
 ### Infrastructure
-| Technology | Purpose |
-|------------|---------|
-| **Terraform** | Infrastructure as Code (ECR, Lambda, DynamoDB, API Gateway, S3, CloudFront) |
-| **Docker** | Containerised Lambda deployment |
-| **AWS ECR** | Container registry |
+|| Technology | Purpose |
+||------------|---------|
+|| **Terraform** | Infrastructure as Code (ECR, Lambda, DynamoDB, API Gateway, S3, CloudFront) |
+|| **Docker** | Containerised Lambda deployment |
+|| **AWS ECR** | Container registry |
 
 ### Frontend
-| Technology | Purpose |
-|------------|---------|
-| **React 18** | UI framework |
-| **TypeScript** | Type safety |
-| **Vite** | Build tool |
-| **Fetch API** | API client (native browser) |
-| **CloudFront** | CDN + HTTPS |
-| **S3** | Static hosting |
+|| Technology | Purpose |
+||------------|---------|
+|| **React 18** | UI framework |
+|| **TypeScript** | Type safety |
+|| **Vite** | Build tool |
+|| **Tailwind CSS v4** | Utility-first styling (@tailwindcss/vite plugin) |
+|| **Fetch API** | API client (native browser) |
+|| **CloudFront** | CDN + HTTPS |
+|| **S3** | Static hosting |
 
 ## Deployment
 
@@ -82,4 +83,3 @@ Before deploying the hybrid RAG version:
    ```
 
 This bakes the private documents + FAISS index into the Lambda image. After the frontend deploy, the "📚 View internal documents" button and agent steps will be visible on your CloudFront URL.
-

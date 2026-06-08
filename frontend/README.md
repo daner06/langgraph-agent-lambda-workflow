@@ -1,6 +1,6 @@
 # Frontend — React research assistant UI
 
-React + TypeScript + Vite app served via S3 + CloudFront. See the repo root `README.md` for the full architecture.
+React + TypeScript + Vite + Tailwind CSS (v4) app served via S3 + CloudFront. See the repo root `README.md` for the full architecture.
 
 ## Local development
 
